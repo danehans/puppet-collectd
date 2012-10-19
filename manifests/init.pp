@@ -30,6 +30,7 @@ class collectd ( $graphitehost ) {
                 path => "/bin:/usr/bin:/sbin:/usr/sbin",
 		logoutput => true,
                 notify  => Service["collectd"],
+		refreshonly => true,
         }
 
 
