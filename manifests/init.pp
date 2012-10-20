@@ -7,11 +7,12 @@
 #   - Install the collectd package
 #
 # Sample Usage:
-#  class { 'collectd': }
-#
+# class { 'collectd':
+#   graphitehost => 'graphite.host.com',
+# }
+
 class collectd ( $graphitehost ) {
 #include graphite
-
 
   service { "collectd":
 	ensure  => "running",
@@ -24,13 +25,15 @@ class collectd ( $graphitehost ) {
         ensure => installed,
         #require => Package["graphite-web"],
   }
-  
+
  exec { "pip-collectd":
-                command => "pip install collectd",
-                path => "/bin:/usr/bin:/sbin:/usr/sbin",
-		logoutput => true,
-                notify  => Service["collectd"],
-        }
+        command     => "pip install collectd",
+        path        => "/bin:/usr/bin:/sbin:/usr/sbin",
+	require     => Package ['python-pip'],
+	logoutput   => true,
+        notify      => Service["collectd"],
+	refreshonly => true,
+ }
 
 
   file { "/etc/collectd/collectd.conf":
@@ -61,8 +64,7 @@ class collectd ( $graphitehost ) {
     }
 
 
-file {
-    '/etc/collectd/carbon-writer.conf':
+  file { '/etc/collectd/carbon-writer.conf':
       group   => 'root',
       mode    => '0644',
       owner   => 'root',
